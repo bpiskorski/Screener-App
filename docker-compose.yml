@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  db:
+    image: timescale/timescaledb:latest-pg15
+    container_name: stock_db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: stocks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: flask_backend
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/stocks
+    ports:  
+      - "5000:5000"
+    volumes:
+      - .:/app
+   # command: sh -c "python wait_for_db.py &&  ["flask", "run", "--host=0.0.0.0"]
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ad@ad.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - "5050:80"
+    depends_on:
+        - db  
+      
+volumes:
+  pgdata:
+
