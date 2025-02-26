@@ -8,22 +8,37 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
       POSTGRES_DB: stocks
+      PGOPTIONS: "-c listen_addresses='*'"
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:  # Add a health check for Flask
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      retries: 3
 
   backend:
     build: .
     container_name: flask_backend
+    restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/stocks
+    command: ["sh", "-c", "sleep 5 && python run.py"]
     ports:  
       - "5000:5000"
     volumes:
       - .:/app
+    healthcheck:  # ✅ Add a health check for Flask
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      retries: 3
+
+    
+    
    # command: sh -c "python wait_for_db.py &&  ["flask", "run", "--host=0.0.0.0"]
 
   pgadmin:
@@ -37,7 +52,8 @@ services:
       - "5050:80"
     depends_on:
         - db  
-      
+    links:
+      - db:stock_db
 volumes:
   pgdata:
 

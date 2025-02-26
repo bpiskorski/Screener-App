@@ -31,6 +31,9 @@ def get_stock_data(ticker):
 
 @main_routes.route('/import', methods=['POST'])
 def import_stocks():
-    import_all_stocks('app/data')
+    import_all_stocks('app/data/stocks')
     return "Data imported successfully!"
     
+@main_routes.route('/health')
+def health():
+    return "OK", 200
