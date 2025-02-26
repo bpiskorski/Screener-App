@@ -11,5 +11,14 @@ class StockPrice(db.Model):
     close = db.Column(db.Float, nullable=False)
     volume = db.Column(db.Integer, nullable=False)
 
-    def __repr__(self):
-        return f"<StockPrice {self.ticker} {self.date}>"
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ticker': self.ticker,
+            'date': self.date.isoformat(),  # Converting DateTime to string
+            'open': self.open,
+            'high': self.high,
+            'low': self.low,
+            'close': self.close,
+            'volume': self.volume
+        }

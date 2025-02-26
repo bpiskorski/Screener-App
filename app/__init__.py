@@ -2,6 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate 
 
+
+
 migrate = Migrate() 
 
 db = SQLAlchemy()
@@ -13,9 +15,11 @@ def create_app():
     # Initialize database
     db.init_app(app)
     migrate.init_app(app, db)
-
     # Register routes
     from app.routes import main_routes
     app.register_blueprint(main_routes)
+    
+   
 
+    #import_all_stocks('app/data/stocks')
     return app
